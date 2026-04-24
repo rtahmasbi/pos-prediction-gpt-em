@@ -21,6 +21,7 @@ import numpy as np
 import torch
 from transformers import GPT2Tokenizer, GPT2Model
 from tqdm import tqdm
+import gzip
 
 
 # ── Configuration ────────────────────────────────────────────────────────────
@@ -39,7 +40,7 @@ def load_corpus(path: str) -> list[str]:
     Load corpus from a plain-text file.
     Each non-empty line is treated as one sentence / document chunk.
     """
-    with open(path, "r", encoding="utf-8") as f:
+    with gzip.open(path, "rt", encoding="utf-8") as f:
         lines = [line.strip() for line in f if line.strip()]
     print(f"Loaded {len(lines):,} sentences from '{path}'")
     return lines

@@ -25,7 +25,7 @@ Requirements:
 import argparse
 import numpy as np
 from tqdm import tqdm
-
+import gzip
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 

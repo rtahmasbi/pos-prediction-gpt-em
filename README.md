@@ -12,10 +12,10 @@ cd pos-prediction-gpt-em/
 ```sh
 
 python extract_hidden_states.py \
-    --corpus my_corpus.txt \
+    --corpus /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/climbmix.txt.gz \
     --layer 5 \
-    --output states.npy \
-    --tokens tokens.txt
+    --output /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/states.npy \
+    --tokens /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/tokens.txt
 ```
 
 ```py
@@ -53,11 +53,11 @@ states, tokens = load_outputs("states.npy", "tokens.txt")
 ```sh
 # Run EM on extracted hidden states
 python gmm_em.py \
-    --states states.npy \
-    --tokens tokens.txt \
+    --states /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/states.npy \
+    --tokens /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/tokens.txt \
     --k 15 \
     --n-init 5 \
-    --output gmm.npz
+    --output /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/gmm.npz
 
 
 ```
@@ -67,7 +67,7 @@ As a library
 ```py
 # load and inspect
 from gmm_em import load_gmm, decode
-result = load_gmm("gmm.npz")
+result = load_gmm("/media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/gmm.npz")
 tags   = decode(result["gamma"])   # (N,) hard tag per token
 ```
 
@@ -75,7 +75,7 @@ tags   = decode(result["gamma"])   # (N,) hard tag per token
 ## Predict
 ```sh
 python predict_pos.py \
-    --gmm gmm.npz \
+    --gmm /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/gmm.npz \
     --sentences "The cat sat on the mat." "A dog ran away."
 
 Sentence: 'The cat sat on the mat.'
@@ -89,7 +89,7 @@ Sentence: 'The cat sat on the mat.'
 
 # With a label map
 python predict_pos.py \
-    --gmm gmm.npz \
+    --gmm /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/gmm.npz \
     --label-map label_map.json \
     --sentences "The cat sat on the mat."
 
@@ -99,7 +99,7 @@ label_map.json:
 
 # from a file
 python predict_pos.py \
-    --gmm gmm.npz \
+    --gmm /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/gmm.npz \
     --label-map label_map.json \
     --input-file sentences.txt \
     --output-file predictions.json
