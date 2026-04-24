@@ -15,7 +15,7 @@ def _list_files_in_repo(repo_id="karpathy/climbmix-400b-shuffle"):
 
 all_files = _list_files_in_repo()
 
-files = [f for f in all_files if f.endswith(".parquet")][:3]
+files = [f for f in all_files if f.endswith(".parquet")][0]
 
 ds = load_dataset(
     "karpathy/climbmix-400b-shuffle",
