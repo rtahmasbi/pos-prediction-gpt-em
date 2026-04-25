@@ -368,11 +368,9 @@ def fit_gmm(
 
         pbar = tqdm(range(max_iter), desc="EM", disable=not verbose)
         for it in pbar:
-
             # ── E-step ────────────────────────────────────────────────────
             gamma, total_ll = e_step(states, pi, mu, sigma2)
             log_liks.append(total_ll)
-
             # ── Collapse check ────────────────────────────────────────────
             collapsed = detect_collapsed_components(gamma, min_mass)
             if collapsed:
@@ -381,10 +379,8 @@ def fit_gmm(
                 )
                 # Recompute responsibilities after reinit
                 gamma, total_ll = e_step(states, pi, mu, sigma2)
-
             # ── M-step ────────────────────────────────────────────────────
             pi, mu, sigma2 = m_step(states, gamma, eps)
-
             # ── Convergence check ─────────────────────────────────────────
             ll_per_token = total_ll / N
             delta        = abs(total_ll - prev_ll) / N
