@@ -11,7 +11,7 @@ cd pos-prediction-gpt-em/
 # extract_hidden_states
 ```sh
 
-python extract_hidden_states.py \
+python src/extract_hidden_states.py \
     --corpus /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/climbmix.txt.gz \
     --layer 5 \
     --output /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/states.npy \

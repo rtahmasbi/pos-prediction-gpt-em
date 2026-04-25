@@ -41,7 +41,7 @@ def load_corpus(path: str) -> list[str]:
     Each non-empty line is treated as one sentence / document chunk.
     """
     with gzip.open(path, "rt", encoding="utf-8") as f:
-        lines = [line.strip() for line in f if line.strip()]
+        lines = [line.strip() for line in f if line.strip()][:100_000]  # limit to 10k sentences for testing
     print(f"Loaded {len(lines):,} sentences from '{path}'")
     return lines
 
