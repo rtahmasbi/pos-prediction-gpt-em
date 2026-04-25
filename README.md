@@ -6,16 +6,18 @@ cd pos-prediction-gpt-em/
 
 ```
 
+# get_texts
+python get_texts.py
 
 
 # extract_hidden_states
 ```sh
 
-python src/extract_hidden_states.py \
+nohup python extract_hidden_states.py \
     --corpus /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/climbmix.txt.gz \
     --layer 5 \
     --output /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/states.npy \
-    --tokens /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/tokens.txt
+    --tokens /media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/tokens.txt &
 ```
 
 ```py

@@ -36,7 +36,7 @@ MIN_SIGMA = 1e-3    # hard minimum on sigma^2 to prevent degeneracy
 
 # ── Initialisation ────────────────────────────────────────────────────────────
 
-def init_kmeans_plusplus(
+def _init_kmeans_plusplus(
     states : np.ndarray,   # (N, d)
     K      : int,
     rng    : np.random.Generator,
@@ -87,7 +87,7 @@ def initialise(
     """
     N, d = states.shape
 
-    mu     = init_kmeans_plusplus(states, K, rng)           # (K, d)
+    mu     = _init_kmeans_plusplus(states, K, rng)           # (K, d)
     pi     = np.full(K, 1.0 / K)                            # (K,)
     sigma2 = np.full(K, states.var() + EPS)                 # (K,)
 
@@ -96,7 +96,7 @@ def initialise(
 
 # ── Log-likelihood helpers ────────────────────────────────────────────────────
 
-def log_gaussian_isotropic(
+def _log_gaussian_isotropic(
     states : np.ndarray,   # (N, d)
     mu     : np.ndarray,   # (K, d)
     sigma2 : np.ndarray,   # (K,)
@@ -136,7 +136,7 @@ def log_gaussian_isotropic(
     return log_norm                                         # (N, K)
 
 
-def log_responsibilities(
+def _log_responsibilities(
     states : np.ndarray,   # (N, d)
     pi     : np.ndarray,   # (K,)
     mu     : np.ndarray,   # (K, d)
@@ -156,7 +156,7 @@ def log_responsibilities(
         log_lik   : (N,)    per-token log p(h_t | theta)
     """
     log_pi    = np.log(pi + 1e-300)                        # (K,)
-    log_gauss = log_gaussian_isotropic(states, mu, sigma2) # (N, K)
+    log_gauss = _log_gaussian_isotropic(states, mu, sigma2) # (N, K)
 
     # unnormalised log joint  log [pi_k * N(h_t | mu_k, sigma_k^2)]
     log_joint = log_pi[None, :] + log_gauss                # (N, K)
@@ -191,7 +191,7 @@ def e_step(
         gamma    : (N, K)  responsibilities (probabilities, sum to 1 over k)
         total_ll : float   total log-likelihood sum_t log p(h_t | theta)
     """
-    log_gamma, log_lik = log_responsibilities(states, pi, mu, sigma2)
+    log_gamma, log_lik = _log_responsibilities(states, pi, mu, sigma2)
     gamma    = np.exp(log_gamma)                           # (N, K)
     total_ll = log_lik.sum()
     return gamma, total_ll
@@ -360,7 +360,9 @@ def fit_gmm(
             print(f"\n── Restart {restart + 1}/{n_init} ──────────────────")
 
         # Initialise parameters
-        pi, mu, sigma2 = initialise(states, K, rng)
+        if verbose:
+            print(" - initialise")
+        pi, mu, sigma2 = initialise(states[:200_000], K, rng)
         log_liks       = []
         prev_ll        = -np.inf
 
@@ -526,7 +528,7 @@ def main() -> None:
     args = parse_args()
 
     print(f"Loading states from '{args.states}' ...")
-    states = np.load(args.states).astype(np.float64)
+    states = np.load(args.states).astype(np.float32)
     print(f"States shape: {states.shape}")
 
     tokens = None
@@ -552,3 +554,45 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+"""
+
+class Args:
+    pass
+
+args = Args()
+args.states = "/media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/states.npy"
+args.tokens = "/media/HD2/RASOOL/OUTPUTS/pos-pred-gpt-em/tokens.txt"
+args.n_init = 5
+K = 15
+
+states = np.load(args.states).astype(np.float32)
+with open(args.tokens, "r", encoding="utf-8") as f:
+    tokens = f.read().splitlines()
+
+    
+print(len(tokens))
+print(len(states))
+
+
+states = states[:100_000]
+tokens = tokens[:100_000]
+## Run Em
+seed = 1
+restart = 0
+rng = np.random.default_rng(seed + restart)
+
+# Initialise parameters
+pi, mu, sigma2 = initialise(states, K, rng)
+print(len(pi), len(mu), len(sigma2))
+
+
+log_liks       = []
+prev_ll        = -np.inf
+
+# ── E-step ────────────────────────────────────────────────────
+gamma, total_ll = e_step(states, pi, mu, sigma2)
+
+
+"""
