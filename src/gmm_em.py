@@ -53,7 +53,7 @@ def _init_kmeans_plusplus(
     components starting on top of each other and then collapsing.
     """
     N, d = states.shape
-    centres = np.empty((K, d), dtype=np.float64)
+    centres = np.empty((K, d), dtype=np.float32)
 
     # Step 1 — first centre chosen uniformly
     centres[0] = states[rng.integers(N)]
